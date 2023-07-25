@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
 	"github.com/rs/zerolog"
@@ -27,8 +30,24 @@ func main() {
 		panic(err)
 	}
 
+	awsCreds := &credentials.Credentials{}
+
+	// Optionally, assume a role
+	roleToAssume := utils.GetEnv("ASSUME_ROLE", "")
+	if len(roleToAssume) > 0 {
+		log.Info().Msgf("Assuming role %s", roleToAssume)
+		awsCreds = stscreds.NewCredentials(awsSession, roleToAssume)
+		_, err := awsCreds.Get()
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to assume role")
+			panic(err)
+		}
+	} else {
+		awsCreds = awsSession.Config.Credentials
+	}
+
 	// Create an ECR client
-	svc := ecr.New(awsSession)
+	svc := ecr.New(awsSession, &aws.Config{Credentials: awsCreds})
 
 	// Instantiate our ecs token getter
 	tokenFetcher := ecr_token.New(svc)

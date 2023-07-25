@@ -21,6 +21,7 @@ docker run -e AWS_REGION=eu-west-1 \
 * `AWS_REGION` - Confiures the AWS SDK's region. This will determine which regions ECR images are available
 * `AWS_ACCESS_KEY_ID` - AWS Access Key
 * `AWS_SECRET_ACCESS_KEY` - AWS Secret Key
+* `ASSUME_ROLE` - When non-empty the tool assumes the provided role. AWS ARN is expected, i.e. "arn:aws:iam::ACC:role/somerole".
 * `LOG_LEVEL` - Default `INFO` - Sets the logging level, one of: `DEBUG`, `INFO`, `WARN`, `ERROR`
 * `LISTEN_PORT` - Default `8080`
 * `LISTEN_HOST` - Default `0.0.0.0`
